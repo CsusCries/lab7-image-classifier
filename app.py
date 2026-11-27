@@ -53,14 +53,19 @@ st.caption(f"Transfer learning model: {info['model_name']} (pre-trained on Image
 
 tab_upload, tab_camera = st.tabs(["Upload image", "Take photo"])
 with tab_upload:
-    uploaded = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png", "webp"])
+    # No `type` filter: on Android this lets the picker offer the Camera option
+    uploaded = st.file_uploader("Upload an image (or take a photo)")
 with tab_camera:
     st.caption("Allow camera access in your browser when asked.")
     captured = st.camera_input("Take a photo of a cat or dog")
 
 file = uploaded or captured
 if file:
-    img = Image.open(file).convert("RGB")
+    try:
+        img = Image.open(file).convert("RGB")
+    except Exception:
+        st.error("That file isn't an image. Please upload a JPG, PNG or WEBP photo.")
+        st.stop()
     st.image(img, caption="Input image", use_container_width=True)
 
     x = np.array(img.resize(size), dtype=np.float32)[None, ...]
