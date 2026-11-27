@@ -8,7 +8,7 @@ from PIL import Image
 from tensorflow.keras.applications import efficientnet, mobilenet_v2, resnet50
 
 # Google Drive share link of best_model.keras ("Anyone with the link" can view)
-MODEL_URL = "PASTE_GOOGLE_DRIVE_LINK_HERE"
+MODEL_URL = "https://drive.google.com/file/d/1V7YEJtvvdo-3kCZxpWgXuhzMcBRryhIb/view?usp=sharing"
 MODEL_PATH = "best_model.keras"
 
 PREPROCESS = {
