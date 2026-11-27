@@ -51,15 +51,8 @@ classes = info["class_names"]
 size = tuple(info["img_size"])
 st.caption(f"Transfer learning model: {info['model_name']} (pre-trained on ImageNet)")
 
-tab_upload, tab_camera = st.tabs(["Upload image", "Take photo"])
-with tab_upload:
-    # No `type` filter: on Android this lets the picker offer the Camera option
-    uploaded = st.file_uploader("Upload an image (or take a photo)")
-with tab_camera:
-    st.caption("Allow camera access in your browser when asked.")
-    captured = st.camera_input("Take a photo of a cat or dog")
-
-file = uploaded or captured
+# No `type` filter: on Android this lets the picker offer the Camera option
+file = st.file_uploader("Upload an image (or take a photo)")
 if file:
     try:
         img = Image.open(file).convert("RGB")
