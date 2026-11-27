@@ -1,5 +1,6 @@
 import json
 import os
+import urllib.request
 
 import numpy as np
 import streamlit as st
@@ -7,8 +8,8 @@ import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.applications import efficientnet, mobilenet_v2, resnet50
 
-# Google Drive share link of best_model.keras ("Anyone with the link" can view)
-MODEL_URL = "https://drive.google.com/file/d/1V7YEJtvvdo-3kCZxpWgXuhzMcBRryhIb/view?usp=sharing"
+# Google Drive file ID of best_model.keras (shared as "Anyone with the link")
+DRIVE_FILE_ID = "1V7YEJtvvdo-3kCZxpWgXuhzMcBRryhIb"
 MODEL_PATH = "best_model.keras"
 
 PREPROCESS = {
@@ -18,11 +19,24 @@ PREPROCESS = {
 }
 
 
+def download_model():
+    """Download best_model.keras from Google Drive."""
+    url = ("https://drive.usercontent.google.com/download"
+           f"?id={DRIVE_FILE_ID}&export=download&confirm=t")
+    tmp = MODEL_PATH + ".part"
+    urllib.request.urlretrieve(url, tmp)
+    with open(tmp, "rb") as f:
+        if f.read(1) == b"<":  # got an HTML page instead of the model file
+            os.remove(tmp)
+            raise RuntimeError("Could not download the model. Check that the "
+                               "Google Drive file is shared as 'Anyone with the link'.")
+    os.replace(tmp, MODEL_PATH)
+
+
 @st.cache_resource
 def load_model():
     if not os.path.exists(MODEL_PATH):
-        import gdown
-        gdown.download(MODEL_URL, MODEL_PATH, quiet=False, fuzzy=True)
+        download_model()
     with open("model_info.json") as f:
         info = json.load(f)
     return tf.keras.models.load_model(MODEL_PATH), info
