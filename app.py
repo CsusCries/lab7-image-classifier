@@ -51,10 +51,17 @@ classes = info["class_names"]
 size = tuple(info["img_size"])
 st.caption(f"Transfer learning model: {info['model_name']} (pre-trained on ImageNet)")
 
-file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png", "webp"])
+tab_upload, tab_camera = st.tabs(["Upload image", "Take photo"])
+with tab_upload:
+    uploaded = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png", "webp"])
+with tab_camera:
+    st.caption("Allow camera access in your browser when asked.")
+    captured = st.camera_input("Take a photo of a cat or dog")
+
+file = uploaded or captured
 if file:
     img = Image.open(file).convert("RGB")
-    st.image(img, caption="Uploaded image", use_container_width=True)
+    st.image(img, caption="Input image", use_container_width=True)
 
     x = np.array(img.resize(size), dtype=np.float32)[None, ...]
     x = PREPROCESS[info["model_name"]](x)
